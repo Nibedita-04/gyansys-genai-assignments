@@ -1,0 +1,14 @@
+langchain                                
+langchain-chroma                         
+langchain-classic                        
+langchain-community                      
+langchain-core                           
+langchain-experimental                   
+langchain-groq                           
+langchain-openai                         
+langchain-text-splitters  
+openai
+groq
+python-dotenv
+streamlit
+pydantic
