@@ -25,9 +25,15 @@ generator_prompt = ChatPromptTemplate.from_messages(
 
             Rules:
             - Follow emoji usage strictly.
+            - Add exactly same number of emojis as mentioned in {emoji_count}.
             - Follow hashtag count strictly.
             - Place hashtags only at the end of the post.
-
+            - Use exactly {emoji_count} emojis in total. 
+            - You MUST include all {emoji_count} emojis, even if the text is short.
+            - Distribute emojis naturally, but do not use fewer than {emoji_count}.
+            - Use exactly {emoji_count} emojis in total.
+            - DO NOT use fewer or more than {emoji_count}.
+            - Distribute evenly across the post.
 
             Recent posts by the user (chronological, oldest → newest):
             {recent_memory}
@@ -51,7 +57,6 @@ generator_prompt = ChatPromptTemplate.from_messages(
             - End with a clear, engaging call-to-action.
 
             Hashtag rules:
-
             - Hashtags must be **relevant to the topic, role, and post idea**.
             - Prefer **niche + professional** hashtags over generic ones.
             - If recent memory exists, align hashtags with recurring themes.
@@ -90,8 +95,3 @@ generator_prompt = ChatPromptTemplate.from_messages(
         )
     ]
 )
-
-
-
-# - Use at most 1–2 relevant emojis.
-#             - Add **4–5 hashtags at the very end** of the post.

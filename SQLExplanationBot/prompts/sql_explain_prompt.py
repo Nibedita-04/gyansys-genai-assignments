@@ -11,8 +11,9 @@ Focus on:
 - Do NOT return the explanation and example
 - Return only crisp answer
 
-SQL Query:
+<SQL Query>
 {sql_query}
+</SQL Query>
 """,
     input_variables=["sql_query"]
 )
