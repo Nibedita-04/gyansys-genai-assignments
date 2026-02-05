@@ -66,10 +66,6 @@ This multi-stage approach improves coherence, personalization, and post quality 
 
 ---
 
-## Workflow
-![alt text](<Screenshot 2026-02-05 132015.png>)
----
-
 ## Session Modes
 
 | Mode       | Behavior                                        |
@@ -106,7 +102,7 @@ This multi-stage approach improves coherence, personalization, and post quality 
 
 ## Project Workflow
 
-![Project Workflow](workflow.png)
+![alt text](<Screenshot 2026-02-05 132015.png>)
 
 ---
 
