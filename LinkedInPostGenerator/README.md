@@ -102,7 +102,7 @@ This multi-stage approach improves coherence, personalization, and post quality 
 
 ## Project Workflow
 
-![alt text](<image.png>)
+![alt text](<Screenshot 2026-02-05 151841.png>)
 
 ---
 
