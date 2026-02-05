@@ -9,10 +9,10 @@ from memory.memory_retriever import retrieve_memory
 
 MIN_WORD_LIMIT = 80
 
-session_mode = input("Choose session mode (linked / standalone): ").strip().lower()
 
 
-def run_pipeline(user_id, user_role, post_idea, word_limit, emoji_count, hashtag_count):
+def run_pipeline(user_id, user_role, post_idea, word_limit, emoji_count, hashtag_count, session_mode="standalone"):
+    
     
     if word_limit < MIN_WORD_LIMIT:
         return f"Word limit too low. Please enter at least {MIN_WORD_LIMIT} words."
@@ -72,14 +72,14 @@ if __name__ == "__main__":
     word_limit_input = input("Enter word limit for post (min 80 recommended): ")
     emoji_count = int(input("Enter emoji count: "))
     hashtag_count = int(input("Enter hashtag count: "))
-
+    session_mode = input("Choose session mode (linked / standalone): ").strip().lower()
     try:
         word_limit = int(word_limit_input)
     except ValueError:
         print("\nWord limit must be a number.")
         exit()
 
-    post = run_pipeline(user_id, user_role, post_idea, word_limit, emoji_count, hashtag_count)
+    post = run_pipeline(user_id, user_role, post_idea, word_limit, emoji_count, hashtag_count,session_mode)
 
     print("\n--- GENERATED LINKEDIN POST ---\n")
     print(post)

@@ -102,7 +102,7 @@ This multi-stage approach improves coherence, personalization, and post quality 
 
 ## Project Workflow
 
-![alt text](<Screenshot 2026-02-05 132015.png>)
+![alt text](<image.png>)
 
 ---
 
@@ -134,7 +134,6 @@ prompts/
   intent_prompt.py         Intent classification prompt
   planner_prompt.py        Post planning prompt
   role_prompt.py           Role understanding prompt
-  stepback_prompt.py       Step-back refinement prompt
 
 storage/
   chroma_db/               Persistent vector memory storage
