@@ -2,7 +2,7 @@ from memory.db_client import get_client
 import re
 import chromadb
 
-client = chromadb.PersistentClient(path="./chroma_db")
+client = chromadb.PersistentClient(path=".storage/chroma_db")
 
 def sanitize_name(name: str):
     name = name.strip().replace(" ", "_")
