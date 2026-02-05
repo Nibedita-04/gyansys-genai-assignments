@@ -12,3 +12,4 @@ groq
 python-dotenv
 streamlit
 pydantic
+torch
