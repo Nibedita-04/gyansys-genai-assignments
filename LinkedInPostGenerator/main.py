@@ -5,8 +5,12 @@ from chains.generator_chain import generator_chain
 from chains.stepback_chain import stepback_chain
 from memory.conversational_memory import get_user_style, add_summary, get_recent_memory
 from memory.conversational_memory import init_user
+from memory.memory_retriever import retrieve_memory
 
 MIN_WORD_LIMIT = 80
+
+session_mode = input("Choose session mode (linked / standalone): ").strip().lower()
+
 
 def run_pipeline(user_id, user_role, post_idea, word_limit, emoji_count, hashtag_count):
     
@@ -30,7 +34,13 @@ def run_pipeline(user_id, user_role, post_idea, word_limit, emoji_count, hashtag
         "post_idea": refined_idea
     }).content
 
-    recent_memory = get_recent_memory(user_id)  
+    # recent_memory = get_recent_memory(user_id)  
+
+    recent_memory = retrieve_memory(user_id, post_idea, k=5, mode=session_mode)
+    print("---- RETRIEVED MEMORY ----")
+    print(recent_memory)
+    print("--------------------------")
+
 
     user_style = get_user_style(user_id)
 

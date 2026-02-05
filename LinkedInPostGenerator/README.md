@@ -1,47 +1,114 @@
+Here’s an **updated README.md** that reflects your **current system**: ChromaDB memory, step-back prompting, session modes (linked/standalone), typo handling, and multi-user personalization.
+
+I’ve kept it **GitHub-polished, professional, structured, and emoji-free**.
+
+---
+
 # LinkedIn Post Generator (AI-Powered)
 
 ## Overview
 
-The LinkedIn Post Generator is an AI-powered application that helps users create high-quality, personalized LinkedIn posts based on their role, intent, and post idea. The system uses Large Language Models (LLMs) and LangChain to generate structured, engaging, and professional content through a multi-step reasoning pipeline.
+The LinkedIn Post Generator is an AI-powered application that helps users create high-quality, personalized LinkedIn posts based on their role, intent, and post idea. The system uses Large Language Models (LLMs), LangChain, and vector-based memory (ChromaDB) to generate structured, engaging, and context-aware posts through a multi-step reasoning pipeline.
 
-This project is designed to support students, job seekers, professionals, and content creators in improving their LinkedIn presence and personal branding.
+The project supports **multi-user personalization**, **memory-based post continuity**, **typo-aware idea refinement**, and **session-based post generation** (linked or standalone).
+
+It is designed for students, job seekers, professionals, and content creators to enhance LinkedIn presence and personal branding.
 
 ---
 
 ## Problem Statement
 
-Many professionals struggle to write effective LinkedIn posts due to limited time, writing confidence, or lack of understanding of platform-specific tone and engagement strategies. This project addresses that challenge by automating the post creation process while maintaining personalization, relevance, and professional quality.
+Many professionals struggle to write effective LinkedIn posts due to time constraints, lack of writing confidence, or uncertainty about platform tone and engagement strategies. Additionally, most AI post generators lack personalization, memory, and narrative continuity across posts.
+
+This project solves these challenges by:
+
+* Automating LinkedIn post creation
+* Maintaining user-specific writing style
+* Linking posts across sessions when desired
+* Correcting typos and refining ideas intelligently
+* Supporting scalable memory using vector databases
 
 ---
 
 ## Key Features
 
-* Role-based post generation tailored to different professions
-* Intent detection to understand the purpose of the post
-* Multi-step AI workflow for structured and high-quality content
-* Customizable tone, writing style, hashtags, and emojis
-* Memory-based personalization to adapt to user preferences over time
-* Modular LangChain pipeline for scalability and maintainability
+* Role-based LinkedIn post generation
+* Intent detection (educational, storytelling, hiring, personal branding)
+* Step-back prompting for typo correction and idea refinement
+* Chain-of-Thought (CoT) reasoning for structured generation
+* Multi-step LangChain pipeline (role → intent → planning → generation)
+* User-specific memory stored in ChromaDB
+* Hybrid memory support (personal + global)
+* Session modes:
+
+  * Linked (uses past memory)
+  * Standalone (ignores memory)
+* Emoji and hashtag count control
+* Writing style adaptation based on historical posts
+* Modular, scalable, and maintainable architecture
 
 ---
 
 ## How It Works
 
-The system follows a structured multi-stage pipeline:
+The system follows a structured AI workflow:
 
-1. Understands the user's role
-2. Detects the intent of the post (educational, storytelling, hiring, etc.)
-3. Plans the structure and key points of the post
-4. Generates a polished LinkedIn-ready post
-5. Applies tone, formatting, and engagement best practices
+1. User authentication and memory initialization
+2. Step-back chain refines and corrects the post idea
+3. Role chain interprets user background
+4. Intent chain determines post purpose
+5. Planner chain structures the post outline
+6. Memory retriever fetches relevant past posts (if linked mode)
+7. Generator chain produces the final LinkedIn post
+8. Memory store saves post embeddings into ChromaDB
 
-This approach improves coherence and quality compared to single-prompt AI generation.
+This multi-stage approach improves coherence, personalization, and post quality compared to single-prompt AI systems.
+
+---
+
+## Workflow
+![alt text](<Screenshot 2026-02-05 132015.png>)
+---
+
+## Session Modes
+
+| Mode       | Behavior                                        |
+| ---------- | ----------------------------------------------- |
+| Linked     | Uses past memory to maintain continuity         |
+| Standalone | Generates a fresh post without memory influence |
+
+---
+
+## Memory System Architecture
+
+### Memory Types
+
+* User-specific memory (ChromaDB collections per user)
+* Global shared memory (optional)
+* Style memory for tone personalization
+
+### Stored Data
+
+* User role
+* Post idea (original + refined)
+* Generated post
+* Timestamp
+* Vector embeddings for semantic retrieval
+
+### Benefits
+
+* Context-aware post linking
+* Career narrative continuity
+* Semantic recall instead of keyword matching
+* Scalable multi-user memory storage
 
 ---
 
 ## Project Workflow
-![alt text](workflow.png)
 
+![Project Workflow](workflow.png)
+
+---
 
 ## Project Structure
 
@@ -49,28 +116,38 @@ This approach improves coherence and quality compared to single-prompt AI genera
 LINKEDINPOSTGENERATOR/
 
 chains/
-  generator_chain.py      Handles final post generation
-  intent_chain.py         Detects post intent
-  planner_chain.py        Plans post structure
-  role_chain.py           Interprets user role
+  generator_chain.py       Final post generation
+  intent_chain.py          Post intent detection
+  planner_chain.py         Post structure planning
+  role_chain.py            Role understanding
+  stepback_chain.py        Typo correction and idea refinement
 
 config/
-  llm.py                  LLM configuration and initialization
+  llm.py                   LLM configuration
 
 memory/
-  conversational_memory.py  Stores user writing preferences
+  db_client.py             ChromaDB client initialization
+  embedding_model.py       SentenceTransformer embeddings
+  memory_store.py          Store memory vectors
+  memory_retriever.py      Retrieve relevant memory
+  user_manager.py          User collection manager
+  conversational_memory.py Legacy JSON memory (optional)
 
 prompts/
-  generator_prompt.py     Instructions for final post writing
-  intent_prompt.py        Instructions for intent classification
-  planner_prompt.py       Instructions for post planning
-  role_prompt.py          Instructions for role understanding
+  generator_prompt.py      Final writing instructions
+  intent_prompt.py         Intent classification prompt
+  planner_prompt.py        Post planning prompt
+  role_prompt.py           Role understanding prompt
+  stepback_prompt.py       Step-back refinement prompt
 
-app.py                    Application interface
-main.py                   Core pipeline execution
-memory_history.json       Stored memory data
-.env                      Environment variables and API keys
-README.md                 Project documentation
+storage/
+  chroma_db/               Persistent vector memory storage
+
+main.py                    Core pipeline runner
+app.py                     Optional UI interface
+.env                       API keys and environment config
+requirements.txt           Dependencies
+README.md                  Project documentation
 ```
 
 ---
@@ -79,10 +156,12 @@ README.md                 Project documentation
 
 * Python
 * LangChain
-* Large Language Models (Groq/OpenAI/Local LLMs)
+* Large Language Models (Groq / OpenAI / Local LLMs)
+* ChromaDB (Vector Database)
+* Sentence Transformers (Embeddings)
 * Prompt Engineering
-* Streamlit (optional user interface)
-* JSON-based memory storage
+* Streamlit (Optional UI)
+* JSON (Legacy memory storage)
 
 ---
 
@@ -111,10 +190,10 @@ OPENAI_API_KEY=your_key_here
 
 ## Running the Project
 
-Run the application:
+Run via terminal:
 
 ```bash
-python app.py
+python main.py
 ```
 
 If using Streamlit:
@@ -123,4 +202,24 @@ If using Streamlit:
 streamlit run app.py
 ```
 
+---
 
+## Example Capabilities
+
+* Typo-aware idea correction (e.g., "langgeaph" → "LangGraph")
+* Multi-post narrative continuity
+* Memory-based personalization
+* Skill progression storytelling
+* Emoji and hashtag constraint control
+* Research-ready modular AI pipeline
+
+---
+
+## Future Enhancements
+
+* Skill graph and career trajectory tracking
+* Memory weighting and temporal decay
+* Explainable memory retrieval debugging
+* Multi-platform post generation (LinkedIn, X, Medium)
+* Research-grade analytics dashboard
+* RAG-based career storytelling engine

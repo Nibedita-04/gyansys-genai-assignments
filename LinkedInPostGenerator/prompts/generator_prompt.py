@@ -1,97 +1,170 @@
-from langchain_core.prompts import ChatPromptTemplate
+# from langchain_core.prompts import ChatPromptTemplate
 
-generator_prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            """
-            You write LinkedIn posts that match the user's natural writing style.
-            Avoid Markdown formatting. Write like a real LinkedIn creator, not a blog or documentation.
-            """
-        ),
-        (
-            "human",
-            """
-            You are a professional LinkedIn post writer who maintains content continuity
-            across a creator’s posts.
+# generator_prompt = ChatPromptTemplate.from_messages(
+#     [
+#         (
+#             "system",
+#             """
+#             You write LinkedIn posts that match the user's natural writing style.
+#             Avoid Markdown formatting. Write like a real LinkedIn creator, not a blog or documentation.
+#             """
+#         ),
+#         (
+#             "human",
+#             """
+#             You are a professional LinkedIn post writer who maintains content continuity
+#             across a creator’s posts.
 
-            User role: {role_info}
-            Post plan: {post_plan}
-            Post idea: {post_idea}
-            User style: {user_style}
-            Target word limit: {word_limit} words
-            Emoji usage rule: {emoji_count}
-            Hashtag usage rule: {hashtag_count}
+#             User role: {role_info}
+#             Post plan: {post_plan}
+#             Post idea: {post_idea}
+#             User style: {user_style}
+#             Target word limit: {word_limit} words
+#             Emoji usage rule: {emoji_count}
+#             Hashtag usage rule: {hashtag_count}
 
-            Rules:
-            - Follow emoji usage strictly.
-            - Add exactly same number of emojis as mentioned in {emoji_count}.
-            - Follow hashtag count strictly.
-            - Place hashtags only at the end of the post.
-            - Use exactly {emoji_count} emojis in total. 
-            - You MUST include all {emoji_count} emojis, even if the text is short.
-            - Distribute emojis naturally, but do not use fewer than {emoji_count}.
-            - Use exactly {emoji_count} emojis in total.
-            - DO NOT use fewer or more than {emoji_count}.
-            - Distribute evenly across the post.
+#             Rules:
+#             - Follow emoji usage strictly.
+#             - Add exactly same number of emojis as mentioned in {emoji_count}.
+#             - Follow hashtag count strictly.
+#             - Place hashtags only at the end of the post.
+#             - Use exactly {emoji_count} emojis in total. 
+#             - You MUST include all {emoji_count} emojis, even if the text is short.
+#             - Distribute emojis naturally, but do not use fewer than {emoji_count}.
+#             - Use exactly {emoji_count} emojis in total.
+#             - DO NOT use fewer or more than {emoji_count}.
+#             - Distribute evenly across the post.
 
-            Recent posts by the user (chronological, oldest → newest):
-            {recent_memory}
+#             Recent posts by the user (chronological, oldest → newest):
+#             {recent_memory}
 
-            Writing objectives:
-            - Write the current post as a natural continuation of the user’s recent content journey.
-            - If recent posts exist, subtly build on themes, learnings, or progress from them
-            WITHOUT repeating phrases, examples, or explanations.
-            - Treat previous posts as background context, not content to quote.
+#             Writing objectives:
+#             - Write the current post as a natural continuation of the user’s recent content journey.
+#             - If recent posts exist, subtly build on themes, learnings, or progress from them
+#             WITHOUT repeating phrases, examples, or explanations.
+#             - Treat previous posts as background context, not content to quote.
 
-            Content rules:
-            - Stay within {word_limit} words (soft limit ±10 words max).
-            - Only reference previous posts if {recent_memory} is not empty.
-            - Never explicitly say “In my previous post…” or directly summarize old posts.
-            - Show progression (deeper insight, refinement, or next step) rather than recap.
-            - Only mention projects if they are explicitly included in {post_idea}.
-            - No title unless specified in post plan.
-            - Use short paragraphs or bullets for readability.
-            - Match the user's natural tone and writing style.
+#             Content rules:
+#             - Stay within {word_limit} words (soft limit ±10 words max).
+#             - Only reference previous posts if {recent_memory} is not empty.
+#             - Never explicitly say “In my previous post…” or directly summarize old posts.
+#             - Show progression (deeper insight, refinement, or next step) rather than recap.
+#             - Only mention projects if they are explicitly included in {post_idea}.
+#             - No title unless specified in post plan.
+#             - Use short paragraphs or bullets for readability.
+#             - Match the user's natural tone and writing style.
             
-            - End with a clear, engaging call-to-action.
+#             - End with a clear, engaging call-to-action.
 
-            Hashtag rules:
-            - Hashtags must be **relevant to the topic, role, and post idea**.
-            - Prefer **niche + professional** hashtags over generic ones.
-            - If recent memory exists, align hashtags with recurring themes.
-            - Do NOT place hashtags mid-post — only after the final CTA.
-            - Avoid overly long or spammy hashtags.
+#             Hashtag rules:
+#             - Hashtags must be **relevant to the topic, role, and post idea**.
+#             - Prefer **niche + professional** hashtags over generic ones.
+#             - If recent memory exists, align hashtags with recurring themes.
+#             - Do NOT place hashtags mid-post — only after the final CTA.
+#             - Avoid overly long or spammy hashtags.
 
-            If recent posts exist:
-            - Assume the reader already understands the background.
-            - Do NOT restate the motivation, problem statement, or benefits already implied by previous posts.
-            - Focus only on the new insight, shift in thinking, or design decision.
+#             If recent posts exist:
+#             - Assume the reader already understands the background.
+#             - Do NOT restate the motivation, problem statement, or benefits already implied by previous posts.
+#             - Focus only on the new insight, shift in thinking, or design decision.
 
-            Quality checks before finalizing:
-            - Does this post feel like it was written by the same person as the previous posts?
-            - Does it add *new value* instead of repeating old content?
-            - Would a regular follower feel continuity and momentum?
+#             Quality checks before finalizing:
+#             - Does this post feel like it was written by the same person as the previous posts?
+#             - Does it add *new value* instead of repeating old content?
+#             - Would a regular follower feel continuity and momentum?
 
-            Tone & platform rules:
-            - Write in a natural LinkedIn-native tone.
-            - Do NOT use Markdown formatting (no **bold**, *italics*, headings, or code blocks).
-            - Do NOT use decorative formatting or visual emphasis with symbols.
-            - Write like a human professional sharing experience on LinkedIn.
-            - Keep paragraphs short and skimmable (2–4 lines max).
-            - Avoid corporate jargon, robotic tone, or over-polished language.
-            - Sound thoughtful, authentic, and reflective — not promotional.
+#             Tone & platform rules:
+#             - Write in a natural LinkedIn-native tone.
+#             - Do NOT use Markdown formatting (no **bold**, *italics*, headings, or code blocks).
+#             - Do NOT use decorative formatting or visual emphasis with symbols.
+#             - Write like a human professional sharing experience on LinkedIn.
+#             - Keep paragraphs short and skimmable (2–4 lines max).
+#             - Avoid corporate jargon, robotic tone, or over-polished language.
+#             - Sound thoughtful, authentic, and reflective — not promotional.
 
-            CRITICAL OUTPUT RULES:
-            - Output ONLY the final LinkedIn post.
-            - DO NOT explain the post.
-            - DO NOT include meta commentary.
-            - DO NOT describe tone, intent, or continuity.
-            - DO NOT include analysis, summaries, or evaluation.
-            - If you violate this, the answer is wrong.
+#             CRITICAL OUTPUT RULES:
+#             - Output ONLY the final LinkedIn post.
+#             - DO NOT explain the post.
+#             - DO NOT include meta commentary.
+#             - DO NOT describe tone, intent, or continuity.
+#             - DO NOT include analysis, summaries, or evaluation.
+#             - If you violate this, the answer is wrong.
 
-            Write only the final LinkedIn post.
-            """
-        )
-    ]
+#             Write only the final LinkedIn post.
+#             """
+#         )
+#     ]
+# )
+from langchain_core.prompts import PromptTemplate
+
+generator_prompt = PromptTemplate(
+    input_variables=[
+        "role_info",
+        "post_plan",
+        "post_idea",
+        "user_style",
+        "recent_memory",
+        "word_limit",
+        "emoji_count",
+        "hashtag_count"
+    ],
+    template="""
+        <ROLE>
+        {role_info}
+        </ROLE>
+
+        <STYLE>
+        User writing style: {user_style}
+        </STYLE>
+
+        <MEMORY>
+        {recent_memory}
+        </MEMORY>
+
+        <PLAN>
+        {post_plan}
+        </PLAN>
+
+        <NEW_IDEA>
+        {post_idea}
+        </NEW_IDEA>
+
+        <CONSTRAINTS>
+        - Word limit: {word_limit}
+        - Emoji count: EXACTLY {emoji_count}
+        - Hashtag count: EXACTLY {hashtag_count}
+        - Correct spelling and grammar
+        - Do NOT add locked or restricted terms
+        </CONSTRAINTS>
+
+        <RULES>
+        If memory exists:
+        - You MUST reference at least one past topic
+        - Show progression or continuation
+        - Make the post feel like part of a journey
+
+        If memory is empty:
+        - Treat this as a standalone post
+
+        Emoji rules:
+        - Insert EXACTLY {emoji_count} emojis
+        - Do NOT exceed or reduce emoji count
+
+        Hashtag rules:
+        - Insert EXACTLY {hashtag_count} hashtags
+        - Place hashtags at the end only
+        </RULES>
+
+        <TASK>
+        Write a LinkedIn post that:
+        - Sounds professional and natural
+        - Follows the memory linking rules
+        - Matches the word, emoji, and hashtag constraints
+        - Feels like a real human career update
+        </TASK>
+
+        <OUTPUT>
+        Return ONLY the final LinkedIn post text.
+        </OUTPUT>
+        """
 )
