@@ -1,12 +1,30 @@
-def detect_intent(user_input: str) -> str:
-    sql_keywords = [
-        "select", "from", "where", "group by",
-        "order by", "join", "having", "limit"
-    ]
+import sqlglot
+import re
 
-    lowered = user_input.lower()
+SQL_START_KEYWORDS = r"^\s*(WITH|SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)"
 
-    if any(keyword in lowered for keyword in sql_keywords):
-        return "SQL_TO_NLP"
+def is_complex_sql(text: str) -> bool:
+    """
+    Detect complex SQL including CTEs, joins, subqueries, enterprise SQL.
+    """
 
-    return "NLP_TO_SQL"
+    if not text or len(text.strip()) < 5:
+        return False
+
+    cleaned = text.strip()
+
+    # Fast keyword confidence check
+    if re.match(SQL_START_KEYWORDS, cleaned.upper()):
+        return True
+
+    # 2 SQLGlot multi-statement parser
+    try:
+        parsed = sqlglot.parse(cleaned)
+        if parsed and len(parsed) > 0:
+            return True
+    except:
+        pass
+
+    return False
+
+

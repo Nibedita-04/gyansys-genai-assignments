@@ -1,33 +1,19 @@
-from chains.sql_explain_chain import explain_sql
-from chains.nl_to_sql_chain import generate_sql
-from utils.intent_detector import detect_intent
+from utils.intent_detector import is_complex_sql
+from chains.nl_to_sql_chain import nl_to_sql_chain
+from chains.sql_explain_chain import sql_explain_chain
+from config import get_llm
 
+llm = get_llm()
 
-def process_user_input(user_input: str) -> str:
-    cleaned_input = user_input.strip()
+user_input = input("Enter your query: ")
 
-    if "Question:" in cleaned_input or "Schema:" in cleaned_input:
-        question = cleaned_input.split("Schema:")[0].replace("Question:", "").strip()
-        schema = cleaned_input.split("Schema:")[1].strip()
-        return generate_sql(question, schema)
+if is_complex_sql(user_input):
+    print("ROUTE: SQL → NL (Explain Mode)")
+    output = sql_explain_chain(llm, user_input)
 
-    intent = detect_intent(cleaned_input)
+else:
+    print("ROUTE: NL → SQL (Generate Mode)")
+    output = nl_to_sql_chain(llm, user_input)
 
-    if intent == "SQL_TO_NLP":
-        return explain_sql(cleaned_input)
+print("\nOUTPUT:\n", output)
 
-    return (
-        "For SQL generation, please provide input in the format:\n\n"
-        "Question:\n<your question>\n\nSchema:\n<database schema>"
-    )
-
-
-if __name__ == "__main__":
-    print("=== SQL Assistant ===")
-    print("Paste SQL OR provide Question + Schema\n")
-
-    user_input = input("Input:\n")
-    output = process_user_input(user_input)
-
-    print("\n=== Output ===")
-    print(output)

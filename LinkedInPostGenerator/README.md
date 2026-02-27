@@ -1,9 +1,3 @@
-Here’s an **updated README.md** that reflects your **current system**: ChromaDB memory, step-back prompting, session modes (linked/standalone), typo handling, and multi-user personalization.
-
-I’ve kept it **GitHub-polished, professional, structured, and emoji-free**.
-
----
-
 # LinkedIn Post Generator (AI-Powered)
 
 ## Overview

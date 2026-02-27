@@ -1,11 +1,28 @@
-from langchain_core.output_parsers import StrOutputParser
-from config import get_llm
 from prompts.nl_to_sql_prompt import nl_to_sql_prompt
+from utils.sql_validator import validate_sql
 
-llm = get_llm()
+MAX_RETRIES = 3
 
-nl_to_sql_chain = nl_to_sql_prompt | llm | StrOutputParser()
+def nl_to_sql_chain(llm, user_query, schema=""):
+    """
+    Converts natural language to SQL.
+    Returns ONLY SQL if valid.
+    """
 
-def generate_sql(question: str, schema: str) -> str:
-    result = nl_to_sql_chain.invoke({"question": question, "schema": schema})
-    return result.strip()
+    for attempt in range(MAX_RETRIES):
+
+        # Format the structured prompt
+        messages = nl_to_sql_prompt.format_messages(
+            user_query=user_query,
+            schema=schema
+        )
+
+        # Call LLM
+        response = llm.invoke(messages)
+        sql_output = response.content.strip()
+
+        # Validate SQL syntax
+        if validate_sql(sql_output):
+            return sql_output
+
+    raise ValueError("LLM failed to generate valid SQL")

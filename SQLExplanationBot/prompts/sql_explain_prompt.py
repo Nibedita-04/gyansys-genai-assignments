@@ -1,19 +1,19 @@
-from langchain_core.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 
-sql_explain_prompt = PromptTemplate(
-    template="""
-You are an expert SQL tutor.
+sql_explain_prompt = ChatPromptTemplate.from_template("""
+<input_variables>
+<sql_query>{sql_query}</sql_query>
+</input_variables>
 
-Explain the following SQL query step by step in simple and clear language.
-Focus on:
-- What each clause does
-- How the final result is produced
-- Do NOT return the explanation and example
-- Return only crisp answer
+<system_rules>
+You are an expert SQL teacher.
+Explain step-by-step in simple language.
+Explain the SQL query in natural language step by step and then finally give the complete meaning of the SQL query.
+Do not rewrite SQL.
+Do not give the response in markdown.
+</system_rules>
 
-<SQL Query>
-{sql_query}
-</SQL Query>
-""",
-    input_variables=["sql_query"]
-)
+<task>
+Explain the SQL query clearly.
+</task>
+""")

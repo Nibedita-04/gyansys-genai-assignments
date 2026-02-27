@@ -6,6 +6,10 @@ llm = get_llm()
 prompt = PromptTemplate(
     input_variables = ["post_idea"],
     template = """
+    <user idea>
+    {post_idea}
+    </user idea>
+
     You are a reasoning assistant for LinkedIn content.
 
     Your task:
@@ -13,13 +17,10 @@ prompt = PromptTemplate(
     2. Detect typos.
     3. If a typo looks like a technical term, library, framework, or product name, correct it to the MOST LIKELY technical term.
     4. NEVER replace technical terms with generic words.
-    5. Preserve names like: LangGraph, LangChain, RAG, FAISS, Groq, LLM, OpenAI, etc.
-    6. Fix only real spelling mistakes.
-    7. Output ONLY the corrected and intent-preserving idea.
+    5. Fix only real spelling mistakes.
+    6. Output ONLY the corrected and intent-preserving idea.
     
-    <user idea>
-    {post_idea}
-    </user idea>
+    
     """
 )
 

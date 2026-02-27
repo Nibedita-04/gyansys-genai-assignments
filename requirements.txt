@@ -1,0 +1,26 @@
+# Core packages
+numpy
+pandas
+tqdm
+python-dotenv
+
+# Parsing
+PyMuPDF
+docx2txt
+python-docx
+
+
+# Machine Learning / Embeddings
+torch
+sentence-transformers
+
+# RAG pipeline
+langchain
+
+# Vector Stores
+chromadb
+faiss-cpu
+qdrant-client
+
+# LLM API (for future Azure OpenAI integration)
+openai

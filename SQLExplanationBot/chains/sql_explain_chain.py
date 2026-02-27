@@ -1,10 +1,14 @@
-from langchain_core.output_parsers import StrOutputParser
-from config import get_llm
 from prompts.sql_explain_prompt import sql_explain_prompt
 
-llm = get_llm()
+def sql_explain_chain(llm, sql_query):
+    """
+    Explains SQL in natural language.
+    """
 
-sql_explain_chain = sql_explain_prompt | llm | StrOutputParser()
+    messages = sql_explain_prompt.format_messages(
+        sql_query=sql_query
+    )
 
-def explain_sql(sql_query: str) -> str:
-    return sql_explain_chain.invoke({"sql_query": sql_query})
+    response = llm.invoke(messages)
+
+    return response.content

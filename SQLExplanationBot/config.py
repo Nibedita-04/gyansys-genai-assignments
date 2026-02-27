@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 
 load_dotenv()
+SQLITE_DB_PATH = "database/sales.db"
 
 def get_llm():
     return ChatGroq(
