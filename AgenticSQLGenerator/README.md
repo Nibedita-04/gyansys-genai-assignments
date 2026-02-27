@@ -182,9 +182,3 @@ The system follows this execution flow:
 * Integrate semantic schema search using embeddings
 
 ---
-
-If you would like, I can also provide:
-
-* A short professional GitHub project description (2–3 lines)
-* Resume bullet points for this project
-* An interview-ready system design explanation
