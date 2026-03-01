@@ -15,6 +15,7 @@ llm = AzureChatOpenAI(
     temperature=0,
 )
 
+# LLM selelcts the tables as per the given user question and available tables
 def select_tables(state):
     user_query = state["user_input"]
     schema = get_schema_metadata()
@@ -25,18 +26,30 @@ def select_tables(state):
         You are a database expert.
         Given a user question and available tables,
         select ONLY the relevant tables needed to answer the question.
+        Match user terms with semantically similar table names.
+        Plural and singular forms should be considered equivalent.
+        If a location is mentioned, check for columns like city or location.
         Return only valid JSON.
         """),
         ("human", f"""
-        User Question:
+        <User Question>
         {user_query}
+        </User Question>
 
-        Available Tables:
+        <Available Tables>
         {table_list}
+        </Available Tables>
         """)
     ])
 
     structured_llm = llm.with_structured_output(TableSelectionOutput)
     response = structured_llm.invoke(prompt.format_messages())
-    state["selected_tables"] = response.model_dump()["tables"]
+
+    tables = response.model_dump().get("tables")
+
+    # Defensive handling
+    if not tables:
+        tables = []
+
+    state["selected_tables"] = tables
     return state

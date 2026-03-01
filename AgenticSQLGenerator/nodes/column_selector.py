@@ -31,11 +31,13 @@ def select_columns(state):
         Return only valid JSON.
         """),
         ("human", """
-        User Question:
+        <User Question>
         {user_query}
+        </User Question>
 
-        Available Tables and Columns:
+        <Available Tables and Columns>
         {schema}
+        </Available Tables and Columns>
         """)
     ])
 

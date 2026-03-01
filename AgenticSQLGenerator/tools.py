@@ -3,6 +3,7 @@ from database import get_schema_metadata, get_foreign_key_graph
 import os
 from dotenv import load_dotenv
 import json
+import sqlite3
 from schema import IntentOutput, SQLGenerationOutput, SQLFixOutput, FinalAnswerOutput
 from join_planner import find_join_path
 
@@ -16,41 +17,38 @@ llm = AzureChatOpenAI(
     temperature=0,
 )
 
-SCHEMA = """
-Tables:
-customers(id, name, age, city)
-orders(id, customer_id, amount, date)
-"""
+
+# INTENT DETECTION - detects the intent of the query whether its a Nl query or unrelated query
 
 def detect_intent(state):
     structured_llm = llm.with_structured_output(IntentOutput)
 
     result = structured_llm.invoke(
         f"""
-        You are classifying user intent for a database agent.
+        Classify the user query into:
 
-        Classify into one of:
+        1. "nl_query" → Database question
+        2. "unrelated_query" → Not related to DB
 
-        1. "nl_query" → Natural language question about the database.
-        2. "unrelated_query" → Question not related to the database.
-
-        <Database Schema>
-        {SCHEMA}
-        </Database Schema>
-        
-        <User Query>
+        Query:
         {state["user_input"]}
-        </User Query>
         """
     )
 
     state["intent"] = result.intent
     return state
 
+
+# NL → SQL GENERATION - converts the Natural Language to SQL
+
 def nl_to_sql(state):
     user_query = state["user_input"]
-    selected_tables = state["selected_tables"]
-    selected_columns = state["selected_columns"]
+    selected_tables = state.get("selected_tables")
+    selected_columns = state.get("selected_columns")
+
+    if not selected_tables or not selected_columns:
+        state["error"] = "Missing table or column selection"
+        return state
 
     schema = get_schema_metadata()
     schema_str = json.dumps(schema, indent=2)
@@ -68,76 +66,124 @@ def nl_to_sql(state):
             if not path:
                 raise Exception(f"No join path found between {start} and {end}")
             join_paths.append(path)
+
             for j in range(len(path) - 1):
                 t1, t2 = path[j], path[j + 1]
                 condition = join_conditions.get((t1, t2))
                 if condition:
-                    join_clauses.append({"from": t1, "to": t2, "condition": condition})
-
-    tables_str = ", ".join(selected_tables)
-    columns_str = ", ".join(selected_columns)
+                    join_clauses.append({
+                        "from": t1,
+                        "to": t2,
+                        "condition": condition
+                    })
 
     prompt = f"""
-            <system_role>
-            You are a deterministic SQLite query planner.
-            You must strictly follow selected tables, columns, join paths, and ON conditions.
-            Output ONLY valid SQLite SQL.
-            </system_role>
+    You are a deterministic SQLite query planner.
 
-            <schema>
-            {schema_str}
-            </schema>
+    <DATABASE SCHEMA>
+    {schema_str}
+    </DATABASE SCHEMA>
 
-            <tables>
-            {tables_str}
-            </tables>
+    <SELECTED TABLES>
+    {selected_tables}
+    </SELECTED TABLES>
 
-            <columns>
-            {columns_str}
-            </columns>
+    <SELECTED COLUMNS>
+    {selected_columns}
+    </SELECTED COLUMNS>
 
-            <join_paths>
-            {json.dumps(join_paths, indent=2)}
-            </join_paths>
+    <JOIN PATHS>
+    {join_paths}
+    </JOIN PATHS>
 
-            <join_conditions>
-            {json.dumps(join_clauses, indent=2)}
-            </join_conditions>
+    <JOIN CONDITIONS>
+    {join_clauses}
+    </JOIN CONDITIONS>
 
-            <user_question>
-            {user_query}
-            </user_question>
-            """
+    <USER QUESTION>
+    {user_query}
+    </USER QUESTION>
 
-    structured_llm = llm.with_structured_output(SQLGenerationOutput, method="function_calling")
+    Output ONLY valid SQLite SQL.
+    """
+
+    structured_llm = llm.with_structured_output(
+        SQLGenerationOutput,
+        method="function_calling"
+    )
+
     result = structured_llm.invoke(prompt)
+
+    print("GENERATED SQL:", result.sql)
+
     state["generated_sql"] = result.sql.strip()
+    state["error"] = None
+
     return state
+
+
+
+# EXECUTE SQL - executes the genrated SQL query and returns the output if the details are present in the db
+
+def execute_sql(state):
+    try:
+        conn = sqlite3.connect("database/enterprise.db")
+        cursor = conn.cursor()
+
+        print("EXECUTING SQL:", state["generated_sql"])
+
+        cursor.execute(state["generated_sql"])
+        rows = cursor.fetchall()
+
+        columns = [desc[0] for desc in cursor.description] if cursor.description else []
+        result = [dict(zip(columns, row)) for row in rows]
+
+        print("SQL RESULT:", result)
+
+        state["sql_result"] = result
+        state["error"] = None
+
+        conn.close()
+
+    except Exception as e:
+        print("SQL ERROR:", str(e))
+        state["error"] = str(e)
+        state["sql_result"] = None
+
+    return state
+
+
+# FIX SQL - If the SQL query failed then retry
 
 def fix_sql(state):
     structured_llm = llm.with_structured_output(SQLFixOutput)
+
     result = structured_llm.invoke(
         f"""
-        The following SQL query failed:
+        The SQL query failed.
 
-        SQL:
+        <SQL>
         {state['generated_sql']}
+        </SQL>
 
-        Error:
+        <Error>
         {state.get('error')}
+        </Error>
 
-        Database Schema:
-        {SCHEMA}
-
-        Fix the SQL query.
+        Fix it.
         """
     )
+
     state["generated_sql"] = result.corrected_sql.strip()
     state["retry_count"] += 1
     return state
 
+
+# FORMAT FINAL ANSWER - generates a clean answer and the result of the SQL query
+
 def format_answer(state):
     structured_llm = llm.with_structured_output(FinalAnswerOutput)
+
     result = structured_llm.invoke(
         f"""
         <User Question>
@@ -148,15 +194,19 @@ def format_answer(state):
         {state.get('sql_result')}
         </SQL Result>
 
-        Generate a clear answer.
+        Generate a clear business answer.
         """
     )
+
     state["final_answer"] = result.answer
     return state
 
+
+# UNRELATED HANDLER - handles the questions which are out of the database
+
 def handle_unrelated(state):
     state["final_answer"] = (
-        "This question is not related to the database schema."
+        "This question is not related to the database schema. "
         "Please ask a database-related question."
     )
     return state

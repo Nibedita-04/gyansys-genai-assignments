@@ -39,15 +39,18 @@ The system is designed to reduce hallucination by strictly enforcing schema awar
 ```
 AgenticSQLGenerator/
 │
+├── database
+│   ├── enterprise.db
+│   ├── schema.sql
+|
 ├── database.py
 ├── populate_enterprise_db.py
 │
 ├── state.py
 ├── graph.py
-│
+├── schema.py
 ├── tools.py
 │
-├── join_config.py
 ├── join_planner.py
 |
 ├── nodes/
@@ -55,7 +58,7 @@ AgenticSQLGenerator/
 │   ├── column_selector.py
 │
 ├── main.py
-├── test.py
+├── trial.ipynb
 │
 └── README.md
 ```
@@ -66,10 +69,12 @@ AgenticSQLGenerator/
 * `populate_enterprise_db.py` – Inserts sample enterprise data
 * `state.py` – Defines LangGraph shared state
 * `graph.py` – Defines the LangGraph workflow and transitions
+* `schema.py` – Defines the structures of the LLM outputs
 * `tools.py` – Contains core agent nodes (intent, SQL generation, execution, retry, formatting)
 * `nodes/` – Modular table and column selection logic
 * `main.py` – Entry point to run the agent interactively
-* `test.py` – Used for isolated testing
+* `trial.py` – Used for printing the workflow
+* `join_planner` - Makes FK graph using BFS Algorithm and provides us with the foreign key graph
 
 ---
 
@@ -154,15 +159,21 @@ The system follows this execution flow:
 
 ---
 
+## Workflow
+
+![Workflow](workflow.png)
+
+---
+
 ## Flow Diagram
 
 ![Flow Diagram](FlowDiagram.png)
 
 ---
 
-## Workflow
+## Database Schema
 
-![Workflow](workflow.png)
+![Database Schema](database.png)
 
 ---
 
