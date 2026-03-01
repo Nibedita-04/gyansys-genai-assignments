@@ -2,13 +2,22 @@
 
 This repository contains all assignments completed as part of a **6-week Generative AI training program**.
 
-I have currently uploaded the **Week 1–2 assignments**, and upcoming assignments will be added as the training progresses.
+I have uploaded the assignments that I had worked upon in the 6 weeks training plan, and upcoming assignments will be added as the training progresses.
 
-## Uploaded Assignments (Week 1–2)
+# Uploaded Assignments
+
+## Week 01-02
 
 - Resume Analyzer with LangChain  
 - LinkedIn Post Generator  
 - SQL Explanation Bot  
-- LangChain Assignments  
+- LangChain Assignments
 
-More assignments will be added in the upcoming weeks.
+## Week 03-04
+
+- Resume Matcher
+
+## Week 05-06
+
+- Agentic SQL Generator
+
