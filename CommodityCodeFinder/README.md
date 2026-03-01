@@ -28,6 +28,8 @@ You can insert your architecture diagram below:
 
 ---
 
+# Flow Diagram
+
 ![alt text](FlowDiagram.png)
 
 ---
