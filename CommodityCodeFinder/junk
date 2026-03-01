@@ -1,0 +1,40 @@
+
+'''
+    <INSTRUCTIONS>
+    - Prefer Food items for Chapters 1-21.
+    - Prefer Beverages for Chapter 22.
+    - Prefer Chemicals / Industrial oils for Chapters 27, 34.
+    - Prefer Cosmetics / Incense for Chapter 33.
+    - Prefer Wooden goods for Chapter 44.
+    - Prefer Miscellaneous manufactured items for Chapter 96.
+    - Use confidence to rank the likelihood that the HSN matches the query.
+    - If you find the query is ambiguous refer to the few shots below and match the pattern to pick the best HSN.
+    </INSTRUCTIONS>
+
+    <FEW-SHOT EXAMPLES>
+        1. Product: Mango (raw)
+        HSN: 080450, Chapter: 08, Confidence: 0.95
+
+        2. Product: Mango Pickle
+        HSN: 200710, Chapter: 20, Confidence: 0.98
+
+        3. Product: Industrial lubricating oil
+        HSN: 271019, Chapter: 27, Confidence: 0.97
+
+        4. Product: Grease based on vegetable/animal oil
+        HSN: 340311, Chapter: 34, Confidence: 0.96
+
+        5. Product: Sandalwood incense sticks
+        HSN: 330610, Chapter: 33, Confidence: 0.99
+    </FEW-SHOT EXAMPLES>
+
+    <IMPORTANT DISTINCTIONS>
+
+    - Pure chemicals or elements → Chapters 28 or 29
+    - Mixtures or preparations → Chapters 32, 34, 38
+    - Edible preparations → Chapters 1–21
+
+    If a product can be both a chemical AND a pigment,
+    prefer chemical classification unless it is a formulated preparation.
+    </IMPORTANT DISTINCTIONS>'''
+
