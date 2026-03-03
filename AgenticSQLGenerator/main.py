@@ -21,7 +21,8 @@ def run_agent():
             "explanation": None,
             "error": None,
             "retry_count": 0,
-            "final_answer": None
+            "final_answer": None,
+            "needs_fix": None
         }
 
         result = app.invoke(state)

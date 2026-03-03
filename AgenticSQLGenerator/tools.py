@@ -17,7 +17,6 @@ llm = AzureChatOpenAI(
     temperature=0,
 )
 
-
 # INTENT DETECTION - detects the intent of the query whether its a Nl query or unrelated query
 
 def detect_intent(state):
@@ -153,31 +152,6 @@ def execute_sql(state):
     return state
 
 
-# FIX SQL - If the SQL query failed then retry
-
-def fix_sql(state):
-    structured_llm = llm.with_structured_output(SQLFixOutput)
-
-    result = structured_llm.invoke(
-        f"""
-        The SQL query failed.
-
-        <SQL>
-        {state['generated_sql']}
-        </SQL>
-
-        <Error>
-        {state.get('error')}
-        </Error>
-
-        Fix it.
-        """
-    )
-
-    state["generated_sql"] = result.corrected_sql.strip()
-    state["retry_count"] += 1
-    return state
-
 
 # FORMAT FINAL ANSWER - generates a clean answer and the result of the SQL query
 
@@ -209,4 +183,131 @@ def handle_unrelated(state):
         "This question is not related to the database schema. "
         "Please ask a database-related question."
     )
+    return state
+
+
+# LLM evaluates the executed SQL
+
+
+# ----------------------------
+# Evaluate SQL correctness
+# ----------------------------
+def evaluate_sql(state):
+    """
+    Evaluate SQL result: if empty or LLM marks incorrect → mark needs_fix
+    """
+    from tools import llm, FinalAnswerOutput
+
+    # Case 1: SQL returned no rows
+    if not state.get("sql_result"):
+        state["needs_fix"] = True
+        return state
+
+    # Case 2: Ask LLM if SQL answer is correct
+    structured_llm = llm.with_structured_output(FinalAnswerOutput)
+
+    result = structured_llm.invoke(
+        f"""
+        <User Query>
+        {state['user_input']}
+        </User Query>
+
+        <Generated SQL>
+        {state['generated_sql']}
+        </Generated SQL>
+
+        <SQL Result>
+        {state.get('sql_result')}
+        </SQL Result>
+
+        Evaluate: Does this SQL answer the user's question correctly? 
+        Answer "yes" or "no".
+        """
+    )
+
+    if result.answer.strip().lower() in ["no", "incorrect"]:
+        state["needs_fix"] = True
+    else:
+        state["needs_fix"] = False
+
+    return state
+
+# Execute SQL with retry
+def execute_sql_with_retry(state, MAX_RETRIES=2):
+    # Initialize counters safely
+    if state.get("retries") is None:
+        state["retries"] = 0
+    if state.get("skip_fix") is None:
+        state["skip_fix"] = False
+
+    # Stop retrying if max retries reached
+    if state["retries"] >= MAX_RETRIES:
+        state["skip_fix"] = True
+        return state
+
+    # Call original execute_sql
+    state = execute_sql(state)
+
+    # Increment retries if error occurred
+    if state.get("error"):
+        state["retries"] += 1
+
+    return state
+
+
+# Evaluate SQL with retry
+def evaluate_sql_with_retry(state, MAX_RETRIES=2):
+    # Initialize counters safely
+    if state.get("retries") is None:
+        state["retries"] = 0
+    if state.get("skip_fix") is None:
+        state["skip_fix"] = False
+
+    # Skip fix if max retries reached
+    if state["retries"] >= MAX_RETRIES:
+        state["needs_fix"] = False
+        state["skip_fix"] = True
+        return state
+
+    # Run normal evaluation
+    state = evaluate_sql(state)
+
+    # Increment retry counter if SQL needs fix
+    if state.get("needs_fix"):
+        state["retries"] += 1
+
+    return state
+
+
+# Fix SQL
+def fix_sql(state):
+    structured_llm = llm.with_structured_output(SQLFixOutput)
+
+    result = structured_llm.invoke(
+        f"""
+        The SQL query failed.
+
+        <SQL>
+        {state['generated_sql']}
+        </SQL>
+
+        <User Input>
+        {state['user_input']}
+        </User Input>
+
+        <Error>
+        {state.get('error')}
+        </Error>
+
+        Fix the error in the generated SQL taking the user query into consideration.
+        """
+    )
+
+    state["generated_sql"] = result.corrected_sql.strip()
+    
+    # Initialize retry_count if not present
+    if state.get("retry_count") is None:
+        state["retry_count"] = 0
+
+    state["retry_count"] += 1
     return state
