@@ -44,16 +44,6 @@ from src.retrieval.chapter_predictor import (
 
 import pandas as pd
 
-from src.retrieval.reranker import rerank
-from src.ingestion.vectordb import get_vectorstore
-from src.retrieval.chapter_predictor import (
-    predict_final_hsn,
-    predict_chapters_semantic,
-    generate_query
-)
-
-import pandas as pd
-
 """TRIAL-7: FINAL VERSION WITH 
 Retrieves 30–40 docs per predicted chapter
 

@@ -11,7 +11,7 @@ def get_skill_extraction_prompt():
 
         Extract skills from the resume text below.
 
-        RULES:
+        <RULES>
         1. Extract ONLY skills explicitly mentioned in the resume.
         2. Do NOT infer or guess skills.
         3. Categorize skills correctly.
@@ -19,11 +19,15 @@ def get_skill_extraction_prompt():
         5. Do NOT add extra fields.
         6. Output MUST be valid JSON.
         7. Extract the candidate's full name. If missing, return null.
+        </RULES>
 
+        <Format Instructions>
         {format_instructions}
+        </Format Instructions>
 
-        RESUME TEXT:
+        <RESUME TEXT>
         {resume_text}
+        </RESUME TEXT>
         """,
         input_variables = ["resume_text"],
         partial_variables = {

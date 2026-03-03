@@ -32,6 +32,7 @@ def select_tables(state):
         Return only valid JSON.
         """),
         ("human", f"""
+         
         <User Question>
         {user_query}
         </User Question>
@@ -39,6 +40,7 @@ def select_tables(state):
         <Available Tables>
         {table_list}
         </Available Tables>
+        
         """)
     ])
 

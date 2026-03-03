@@ -1,0 +1,24 @@
+# Core Python dependencies
+numpy
+pandas
+
+# Database connectors
+psycopg2-binary       # PostgreSQL
+mysql-connector-python # MySQL
+SQLAlchemy            # ORM / SQL building
+
+# NLP / AI (for generating SQL using LLMs)
+openai
+transformers
+sentence-transformers
+
+# Utilities
+python-dotenv          # Environment variables (DB credentials, API keys)
+tqdm                   # Progress bars
+requests               # HTTP requests
+
+# Optional: for testing
+pytest
+
+# Optional: if using LangChain or Agentic pipelines
+langchain
