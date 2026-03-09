@@ -58,6 +58,8 @@ Steps:
 Resume → Hash → Cache Check → Parse → Structure → Store → Embed → Vector DB
 ```
 
+![alt text](images/resume_workflow.png)
+
 ---
 
 ### 2. Job Description Matching Pipeline
@@ -76,6 +78,14 @@ Steps:
 ```
 JD → Parse → Structure → Embed → Vector Search → Rerank → Results
 ```
+
+![alt text](images/jd_workflow.png)
+
+---
+
+# Overall Master Workflow
+
+![alt text](images/master_workflow.png)
 
 ---
 
