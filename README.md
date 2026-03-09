@@ -21,4 +21,5 @@ I have uploaded the assignments that I had worked upon in the 6 weeks training p
 ## Week 05-06
 
 - Agentic SQL Generator
+- Agentic Resume Matcher
 
