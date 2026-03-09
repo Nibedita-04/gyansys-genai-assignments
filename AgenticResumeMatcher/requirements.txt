@@ -1,0 +1,36 @@
+# LangChain ecosystem
+langchain
+langchain-core
+langchain-community
+langchain-openai
+langchain-chroma
+
+# LangGraph
+langgraph
+
+# Vector database
+chromadb
+
+# Embeddings / tokenization
+tiktoken
+
+# Data validation
+pydantic
+
+# Document processing
+python-docx
+docx2txt
+
+# Utilities
+python-dotenv
+tqdm
+numpy
+
+langgraph
+langchain
+langchain-openai
+chromadb
+pydantic
+python-dotenv
+
+# 681 resumes

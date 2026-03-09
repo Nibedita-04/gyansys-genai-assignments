@@ -1,0 +1,21 @@
+# Program files
+demo.py
+trial.ipynb
+
+# VSCode
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# Vector DB
+vector_db/
+
+# Environment
+.env
+venv/
+
+# Data
+data/
+cache/
