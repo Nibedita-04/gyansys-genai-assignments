@@ -161,7 +161,7 @@ The system follows this execution flow:
 
 ## Workflow
 
-![Workflow](workflow.png)
+![Workflow](workflow_updated.png)
 
 ---
 
