@@ -10,14 +10,14 @@ master_graph = build_master_graph()
 
 st.set_page_config(page_title="Agentic Resume Matcher", layout="wide")
 
-st.title("📄 Agentic Resume Matcher")
+st.title("Agentic Resume Matcher")
 st.markdown("Automatically ingest resumes and match them against a Job Description.")
 
 # -----------------------------
 # Resume Ingestion Section
 # -----------------------------
 
-st.header("1️⃣ Resume Ingestion")
+st.header("Resume Ingestion")
 
 if st.button("Check & Ingest Resumes"):
     resume_files = [
@@ -33,13 +33,13 @@ if st.button("Check & Ingest Resumes"):
         resume_graph.invoke({"file_path": file_path})
         progress.progress((i + 1) / total)
 
-    st.success("Resume ingestion complete! ✅")
+    st.success("Resume ingestion complete!")
 
 # -----------------------------
 # JD Upload & Search Section
 # -----------------------------
 
-st.header("2️⃣ Upload Job Description")
+st.header("Upload Job Description")
 
 uploaded_jd = st.file_uploader("Upload JD (.pdf or .docx)", type=["pdf", "docx"])
 
@@ -58,7 +58,7 @@ if uploaded_jd:
                 "file_path": jd_path
             })
 
-        st.header("🏆 Top Matching Candidates")
+        st.header("Top Matching Candidates")
 
         reranked = result.get("reranked_results", [])
 
